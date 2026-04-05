@@ -31,4 +31,17 @@ public class User {
     @Column(name = "password", nullable = false)
     @NotNull
     private String password;
+
+    public void fullUpdate(UserDto user) {
+        this.email = user.getEmail();
+        this.name = user.getName();
+        this.surname = user.getSurname();
+    }
+
+    public void createByRegisterDto(RegisterDto registerDto) {
+        this.email = registerDto.getEmail();
+        this.name = registerDto.getName();
+        this.surname = registerDto.getSurname();
+        this.password = registerDto.getPassword();
+    }
 }
