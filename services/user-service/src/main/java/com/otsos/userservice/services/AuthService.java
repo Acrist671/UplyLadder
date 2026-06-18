@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 public class AuthService {
 
     private final UserRepository userRepository;
@@ -30,6 +29,7 @@ public class AuthService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
+    @Transactional
     public AuthDto registerUser(RegisterDto registerDto) throws ApiException {
         if (userRepository.findByEmail(registerDto.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException(registerDto.getEmail());
@@ -52,7 +52,7 @@ public class AuthService {
         if (user == null) {
             throw new UserNotFoundException(loginDto.getEmail());
         }
-        else if (!passwordEncoder.matches(passwordEncoder.encode(loginDto.getPassword()), user.getPassword())) {
+        else if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
             throw new IncorrectPasswordException(user.getId().toString());
         }
         return returnAuthDto(user, jwtTokenProvider.generateToken(user));
