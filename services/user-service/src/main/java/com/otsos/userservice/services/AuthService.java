@@ -36,6 +36,7 @@ public class AuthService {
         }
         else{
             registerDto.setPassword(passwordEncoder.encode(registerDto.getPassword()));
+
             User user = new User();
             user.createByRegisterDto(registerDto);
 

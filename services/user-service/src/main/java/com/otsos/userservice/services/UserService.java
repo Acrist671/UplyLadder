@@ -1,5 +1,6 @@
 package com.otsos.userservice.services;
 
+import com.otsos.userservice.dto.AuthDto;
 import com.otsos.userservice.dto.User;
 import com.otsos.userservice.dto.UserDto;
 import com.otsos.userservice.exceptions.IncorrectPasswordException;
@@ -28,24 +29,27 @@ public class UserService {
     }
 
     public UserDto getUser(Long id) throws UserNotFoundException {
-        Optional<User> user = userRepository.findById(id);
-        return user.map(this::returnUserDto).
+        User user = userRepository.findById(id).
                 orElseThrow(() -> new UserNotFoundException(id.toString()));
+
+        return new UserDto(user.getEmail(),
+                user.getName(), user.getSurname());
     }
 
     @Transactional
-    public UserDto updateUser(Long id, UserDto user) {
+    public AuthDto updateUser(Long id, UserDto user) {
         User userToUpdate = userRepository.findById(id).
                 orElseThrow(() -> new UserNotFoundException(id.toString()));
 
         userToUpdate.fullUpdate(user);
         userRepository.save(userToUpdate);
 
-        return returnUserDto(userToUpdate);
+        return new AuthDto(userToUpdate.getId(), userToUpdate.getName(),
+                userToUpdate.getSurname(), jwtTokenProvider.generateToken(userToUpdate));
     }
 
     @Transactional
-    public UserDto updatePassword(Long id, String oldPassword, String newPassword) {
+    public AuthDto updatePassword(Long id, String oldPassword, String newPassword) {
         User user = userRepository.findById(id).
                 orElseThrow(() -> new UserNotFoundException(id.toString()));
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
@@ -55,7 +59,8 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
 
-        return returnUserDto(user);
+        return new AuthDto(user.getId(), user.getName(),
+                user.getSurname(), jwtTokenProvider.generateToken(user));
     }
 
     @Transactional
@@ -63,11 +68,5 @@ public class UserService {
         User user = userRepository.findById(id).
                 orElseThrow(() -> new UserNotFoundException(id.toString()));
         userRepository.delete(user);
-    }
-
-    private UserDto returnUserDto(User user) {
-        UserDto userDto = new UserDto(user.getEmail(), user.getName(), user.getSurname());
-        userDto.setJwtToken(jwtTokenProvider.generateToken(user));
-        return userDto;
     }
 }
