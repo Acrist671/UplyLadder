@@ -1,5 +1,7 @@
 package com.otsos.userservice.controllers;
 
+import com.otsos.userservice.dto.AuthDto;
+import com.otsos.userservice.dto.ChangePasswordDto;
 import com.otsos.userservice.dto.UserDto;
 import com.otsos.userservice.exceptions.UserNotFoundException;
 import com.otsos.userservice.services.UserService;
@@ -25,14 +27,14 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
-        UserDto updatedUser = userService.updateUser(id, userDto);
+    public ResponseEntity<AuthDto> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
+        AuthDto updatedUser = userService.updateUser(id, userDto);
         return ResponseEntity.ok(updatedUser);
     }
 
-    @PutMapping("/{id}/password")
-    public ResponseEntity<UserDto> updatePassword(@PathVariable Long id, @RequestParam String oldPassword, @RequestParam String newPassword) {
-        UserDto updatedUser = userService.updatePassword(id, oldPassword, newPassword);
+    @PutMapping("/password/{id}")
+    public ResponseEntity<AuthDto> updatePassword(@PathVariable Long id, @RequestBody ChangePasswordDto dto) {
+        AuthDto updatedUser = userService.updatePassword(id, dto.getOldPassword(), dto.getNewPassword());
         return ResponseEntity.ok(updatedUser);
     }
 

@@ -4,11 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-public class UserDto {
-    private String email;
-    private String name;
-    private String surname;
+public class ChangePasswordDto {
+    String oldPassword;
+    String newPassword;
 }
